@@ -331,8 +331,11 @@ class generateReferenceTest(unittest.TestCase):
 		self.assertEqual(reference, "Prasanna, M., Chandran, K., & Thiruvenkadam, K. (2011). Automatic test case generation for unified modelling language collaboration diagrams. ETE Journal of Research, 57(1), 77 - 81. doi: 10.4103/0377-2063.78373" )
 		print "generate reference test passed"
 
-if __name__ == "__main__":
-	unittest.main()
+
+
+#print generateReferences( json.loads(text_data) )
+unittest.main()
+
 
 
 
