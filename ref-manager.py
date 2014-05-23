@@ -11,7 +11,7 @@
 #!/usr/bin/env python
 
 import json
-
+import unittest
 
 text_data = """
 [
@@ -297,8 +297,43 @@ def generateReferences(references):
 		print ""
 
 
-list_data = json.loads(text_data)
-generateReferences(list_data)
+class generateReferenceTest(unittest.TestCase):
+
+	def setUp(self):
+		self.text_data = """
+		{
+		"type": "article",
+		"title": "Automatic test case generation for unified modelling language collaboration diagrams",
+		"authors":  [ "M Prasanna", "K Chandran", "K Thiruvenkadam"],
+		"journal": "ETE Journal of Research",
+		"volume" : "57",
+		"issue" : "1",
+		"year": "2011",
+		"pages": "77 - 81",
+		"doi": "10.4103/0377-2063.78373"
+		}
+		"""
+		self.list_data 	= json.loads(self.text_data)
+		self.authors	= [ "M Prasanna", "K Chandran", "K Thiruvenkadam"]
+
+
+
+
+	def test_generateAuthorsFromList(self):
+		authors = generateAuthorsFromList(self.authors)
+		self.assertEqual(authors, "Prasanna, M., Chandran, K., & Thiruvenkadam, K.")
+		print "generate author test passed"
+
+
+
+	def test_generateAPACitatinon(self):
+		reference = generateReference(self.list_data)
+		self.assertEqual(reference, "Prasanna, M., Chandran, K., & Thiruvenkadam, K. (2011). Automatic test case generation for unified modelling language collaboration diagrams. ETE Journal of Research, 57(1), 77 - 81. doi: 10.4103/0377-2063.78373" )
+		print "generate reference test passed"
+
+if __name__ == "__main__":
+	unittest.main()
+
 
 
 
