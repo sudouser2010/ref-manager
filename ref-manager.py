@@ -135,12 +135,7 @@ def generateAuthorsFromList(author_list):
     #--------------------------------------
     return authors_fragment
 
-
-def generateReferences(references):
-    """
-    input is an array of references
-    """
-    for reference in references:
+def generateReference(reference):
         if reference["type"] == "article":
 
             title   = reference.get('title',    False)
@@ -158,6 +153,7 @@ def generateReferences(references):
             #------------------------initialization
             title_fragment      = ""
             authors_fragment    = ""
+
             journal_fragment    = ""
             year_fragment       = "(n.d.)."
             link_fragment       = ""
@@ -168,11 +164,17 @@ def generateReferences(references):
 
             #----------------------------------------generate authors from list
             """
+
             According to the apa, if there are no authors, then authors_list remains an empty string.
+
             Also, if the author is an organization, the author is simply just the organization.
+
             source: https://owl.english.purdue.edu/owl/resource/560/06/
 
+
+
             When the author is an organization, code takes the first element in author list.
+
             example: The reference will have a key of "special":{"author_is_org": true}
             Otherwise it generates authors by <last name>, <first name letter>
             """
@@ -190,7 +192,9 @@ def generateReferences(references):
             #----------------------------------------generate year
             """
             whenever there's no date n.d. is used
+
             http://psychology.about.com/b/2010/11/03/how-to-cite-an-online-article-with-no-date.htm
+
             """
             if year:
                 year_fragment = "(%s)." % (year)
@@ -198,15 +202,22 @@ def generateReferences(references):
 
             #-----------------------------------------------------generate title
             """
+
             A title must be included as a part of the reference
+
             According to apa only the first word and proper nouns should be capitalized.
+
             Also, the first word after a colon should be capitalized
             Because it is too challenging for the code to determine proper nouns, this will be
             left to the descretion of the user
 
+
+
             http://www.bemidjistate.edu/students/wrc/writing_sources/apa/references/
+
             http://www.bibme.org/citation-guide/APA/journal
             http://www.roanestate.edu/owl/apa-citations.htm
+
             http://employees.csbsju.edu/proske/nursing/apa.htm
             """
             if title:
@@ -218,6 +229,7 @@ def generateReferences(references):
             #-------------------------------------generate journal
             """
             A journal name must be included as a part of the reference.
+
             Significant words of a journal title are capitalized. This is left to the users descretion as well
             http://library.ucf.edu/rosen/guide_apa.php
             """
@@ -231,6 +243,7 @@ def generateReferences(references):
             #---------------------------------------------------generate volume
             """
             The volume is not necessary
+
             """
             if volume:
                 journal_fragment +=", %s" % (volume)
@@ -263,6 +276,7 @@ def generateReferences(references):
             #-----------------------------------------------generate doi or link
             """
             The doi and/or link are not needed.
+
             If both a link and a doi are present, the doi will supercede the link
             """
             if doi:
@@ -271,19 +285,21 @@ def generateReferences(references):
                 link_fragment +=" Retrieved from %s" % (link)
             #-----------------------------------------------generate doi or link
 
-            citation = authors_fragment + " " + year_fragment + " " + title_fragment + " " +journal_fragment + doi_fragment + link_fragment
-            print citation
-            print ""
+            return authors_fragment + " " + year_fragment + " " + title_fragment + " " +journal_fragment + doi_fragment + link_fragment
+
+
+def generateReferences(references):
+    """
+    input is an array of references
+    """
+    for reference in references:
+		print generateReference(reference)
+		print ""
+
 
 list_data = json.loads(text_data)
 generateReferences(list_data)
-"""
-try:
-    list_data = json.loads(text_data)
-    generateReferences(list_data)
-except Exception as thisError:
-    print thisError #"Error parsing data"
-"""
+
 
 
 
