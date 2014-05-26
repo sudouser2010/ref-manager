@@ -107,6 +107,17 @@ text_data = """
 	"year": "2011",
     "pages": "77 - 81",
     "doi": "10.4103/0377-2063.78373"
+    },
+
+    {
+    "type": "article",
+	"title": "WebMate: A tool for testing web 2.0 applications",
+	"authors":  [ "Valentin Dallmeier", "Martin Burger", "Tobias Orth", "Andreas Zeller"],
+	"journal": "Software Quality. Increasing Value in Software and Systems Development",
+	"volume" : "133",
+	"year": "2013",
+    "pages": "55 - 69",
+    "doi": "10.1007/978-3-642-35702-2_5"
     }
 
 
@@ -333,8 +344,8 @@ class generateReferenceTest(unittest.TestCase):
 
 
 
-#print generateReferences( json.loads(text_data) )
-unittest.main()
+print generateReferences( json.loads(text_data) )
+#unittest.main()
 
 
 
