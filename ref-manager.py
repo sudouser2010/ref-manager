@@ -28,10 +28,13 @@ class makeReference:
         self.link       = reference_data.get('link',     False)
         self.doi        = reference_data.get('doi',      False)
         self.type       = reference_data.get("type",     False)
-        self.umi        = reference_data.get("umi",     False)
+        self.umi        = reference_data.get("umi",      False)
 
         self.school_name    = reference_data.get("school_name",         False)
         self.school_location= reference_data.get("school_location",     False)
+        self.pub_city       = reference_data.get("pub_city",            False)
+        self.pub_state      = reference_data.get("pub_state",           False)
+        self.publisher      = reference_data.get("publisher",           False)
 
 
 
@@ -82,7 +85,7 @@ class makeReference:
 
         #----------------------------------------generate authors from list
         if self.authors:
-            if self.type in {"org", "thesis", "thesis-unpub", "dissertation", "dissertation-unpub"} :
+            if self.type in {"org", "website", "thesis", "thesis-unpub", "dissertation", "dissertation-unpub"} :
                 self.authors_fragment = self.authors[0]
             else:
                 self.generate_authors_from_list()
@@ -212,19 +215,61 @@ class makeReference:
         elif self.link:
             #for articles, thesis/dissertations
             self.origin_fragment = "Retrieved from %s" % (self.link)
+        elif self.pub_city and self.publisher:
+            #for books in print
+            self.origin_fragment = "%s" % (self.pub_city)
+
+            if self.pub_state:
+                self.origin_fragment += ", %s" % (self.pub_state)
+
+            self.origin_fragment += ": %s" % (self.publisher)
 
         if required and self.origin_fragment == "":
             raise Exception("No Origin Included")
         #-----------------------------------------------generate origin
 
+    def check_reference_for_errors(self):
+        """
+        this function will help the user enter correct information for each type
+        """
+
+        #------------------------------------all citations need author, year, title
+        assert self.authors,    "authors not present"
+        assert self.year,       "year not present"
+        assert self.title,      "link not present"
+        #------------------------------------all citations need author, year, title
+
+        if self.type == "website":
+            #website must have a link
+            assert self.link, "link not present"
+
+        if self.type == "article":
+            #article must have a journal
+            assert self.journal, "journal not present"
+
+        if self.type == "book":
+            #book must have a (city and publisher) or (a link)
+            assert (self.pub_city and self.publisher) or self.link, \
+                "(no publisher and no city) or no link present"
+
+        if self.type in {"thesis-unpub", "dissertation-unpub"}:
+            #unpublished thesis and dissertations must have links or (school name and location)
+            assert (self.school_name and self.school_location) or self.link , \
+                "(no school name and no school location) or no link present"
+
+        if self.type in {"thesis", "dissertation"}:
+            #published thesis and dissertations must have umi
+            assert self.umi, "link not present"
 
     def generate_reference(self):
+
+        self.check_reference_for_errors()
         self.generate_authors()
         self.generate_year()
         self.generate_title()
 
 
-        if self.type in {"thesis", "thesis-unpub", "dissertation", "dissertation-unpub"}:
+        if self.type in {"website","book", "thesis", "thesis-unpub", "dissertation", "dissertation-unpub"}:
             self.generate_origin()
             self.generated_reference = self.authors_fragment + " " + self.year_fragment + " " + self.title_fragment + \
                                        " " + self.origin_fragment
@@ -233,6 +278,7 @@ class makeReference:
             self.generate_origin(False)
             self.generated_reference = self.authors_fragment + " " + self.year_fragment + " " + self.title_fragment + \
                                        " " + self.journal_fragment + " " + self.origin_fragment
+
 
 
 class makeReferences:
@@ -269,8 +315,6 @@ class generateReferenceTest(unittest.TestCase):
         }
         """
         self.reference1 = makeReference( json.loads(reference1))
-        #self.list_data  = json.loads(self.text_data)
-        #self.authors    = [ "M Prasanna", "K Chandran", "K Thiruvenkadam"]
 
     def test_generate_reference(self):
         self.reference1.generate_reference()
