@@ -85,7 +85,10 @@ class makeReference:
 
         #----------------------------------------generate authors from list
         if self.authors:
-            if self.type in {"org", "website", "thesis", "thesis-unpub", "dissertation", "dissertation-unpub"} :
+            if self.type in {"website", "thesis", "thesis-unpub", "dissertation", "dissertation-unpub"} :
+                self.authors = [self.authors[0]]
+                self.generate_authors_from_list()
+            elif self.type == "org":
                 self.authors_fragment = self.authors[0]
             else:
                 self.generate_authors_from_list()
@@ -130,16 +133,17 @@ class makeReference:
 
         #-----------------------------------------------------generate title
         if self.title:
-            self.title_fragment = "%s." % (self.title)
-            if self.title_fragment    == "thesis":
-                self.title_fragment += " (Master's thesis)."
-            elif self.title_fragment  == "thesis-unpub":
-                self.title_fragment += " (Unpublished master's thesis)."
-            elif self.title_fragment  == "dissertation":
-                self.title_fragment += " (Doctoral dissertation)."
-            elif self.title_fragment  == "dissertation-unpub":
-                self.title_fragment += " (Unpublished doctoral dissertation)."
+            self.title_fragment = "%s" % (self.title)
+            if self.type    == "thesis":
+                self.title_fragment += " (Master's thesis)"
+            elif self.type  == "thesis-unpub":
+                self.title_fragment += " (Unpublished master's thesis)"
+            elif self.type  == "dissertation":
+                self.title_fragment += " (Doctoral dissertation)"
+            elif self.type  == "dissertation-unpub":
+                self.title_fragment += " (Unpublished doctoral dissertation)"
 
+        self.title_fragment += "."
         if required and self.title_fragment == "":
             raise Exception("No Title Included")
         #-----------------------------------------------------generate title
@@ -204,7 +208,7 @@ class makeReference:
         #-----------------------------------------------generate origin
         if self.umi and self.type in {"thesis", "thesis-unpub", "dissertation", "dissertation-unpub"}:
             #for thesis and dissertations published in the US
-            self.origin_fragment = "Retrieved from ProQuest Dissertations and Theses.(UMI No. %s)." % (self.umi)
+            self.origin_fragment = "Retrieved from ProQuest Dissertations and Theses. (UMI No. %s)." % (self.umi)
         elif self.school_name and self.school_location:
             #for published thesis/dissertation in print or unpublished thesis/dissertations
             #the location is given as city, state
@@ -314,16 +318,36 @@ class generateReferenceTest(unittest.TestCase):
         "doi": "10.4103/0377-2063.78373"
         }
         """
-        self.reference1 = makeReference( json.loads(reference1))
+
+        reference2 = """
+        {
+        "type": "thesis",
+        "title": "Portable game based instruction of American sign language",
+        "authors": [ "Christyna Wilson" ],
+        "journal": "All Theses",
+        "year": "2013",
+        "link": "http://tigerprints.clemson.edu/cgi/viewcontent.cgi?article=2760&context=all_theses",
+        "umi": "1544218"
+        }
+        """
+        self.reference1 = makeReference(json.loads(reference1))
+        self.reference2 = makeReference(json.loads(reference2))
 
     def test_generate_reference(self):
         self.reference1.generate_reference()
+        self.reference2.generate_reference()
 
         self.assertEqual(self.reference1.generated_reference,
             "Prasanna, M., Chandran, K., & Thiruvenkadam, K. (2011). Automatic test case generation for "
             "unified modelling language collaboration diagrams. ETE Journal of Research, "
             "57(1), 77 - 81. doi: 10.4103/0377-2063.78373" )
-        print "generate reference test passed"
+        print "reference for article test passed"
+
+        self.assertEqual(self.reference2.generated_reference,
+            "Wilson, C. (2013). Portable game based instruction of American sign language (Master's thesis)."
+            " Retrieved from ProQuest Dissertations and Theses. (UMI No. 1544218)." )
+        print "reference for published thesis test passed"
+
 
 
 makeReferences(text_data).generate_references()
