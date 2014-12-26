@@ -5,14 +5,16 @@
 # Author:      HDizzle
 #
 # Created:     09/May/2014
-# Copyright:   (c) Junior 2014
-# Licence:     <your licence>
+# Copyright:   (c) HDizzle 2014
+# License:     MIT
 #-------------------------------------------------------------------------------
 #!/usr/bin/env python
 
 import json
 import unittest
-from sample_data import text_data
+#from sample_data import text_data
+#from real_data import text_data
+from chp2 import text_data
 
 class makeReference:
 
@@ -58,8 +60,11 @@ class makeReference:
         i = 0
         #--------------------------------------
         while i < count:
-            first_name, last_name = self.authors[i].split()
-            self.authors_fragment += "%s, %s." % (last_name, first_name[0])
+            try:
+                first_name, last_name = self.authors[i].split()
+                self.authors_fragment += "%s, %s." % (last_name, first_name[0])
+            except:
+                self.authors_fragment += "%s" % (self.authors[i])
 
             if i < count - 1:
                 #before and on the second to last author
@@ -349,7 +354,7 @@ class generateReferenceTest(unittest.TestCase):
         print "reference for published thesis test passed"
 
 
-
-makeReferences(text_data).generate_references()
 #unittest.main()
+makeReferences(text_data).generate_references()
+
 
