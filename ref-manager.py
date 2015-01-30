@@ -12,9 +12,10 @@
 
 import json
 import unittest
-from sample_data import text_data
+#from sample_data import text_data
 #from chp1 import text_data
 #from chp2 import text_data
+from chp3 import text_data
 
 class makeReference:
 
@@ -297,14 +298,27 @@ class makeReferences:
     """
 
     def __init__(self, data):
-        self.references = json.loads(data)
+        self.references_json = json.loads(data)
+        self.references      = []
 
-    def generate_references(self):
-        for reference in self.references:
+
+    def make_references(self):
+        for reference in self.references_json:
             local_reference = makeReference(reference)
             local_reference.generate_reference()
-            print local_reference.generated_reference
-            print ""
+            self.references.append(local_reference.generated_reference)
+
+    def sort_references(self):
+        self.references.sort()
+
+    def print_references(self):
+        for reference in self.references:
+            print reference
+
+    def generate_references(self):
+        self.make_references()
+        self.sort_references()
+        self.print_references()
 
 
 class generateReferenceTest(unittest.TestCase):
